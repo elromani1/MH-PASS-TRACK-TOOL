@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# ==================================================
+# MH PASS TOOL
+# Author : Malek Al-Hakem
+# Use at your own risk!
+# Educational & authorized testing only
+# ==================================================
+
+import os
+import sys
+from itertools import permutations
+
+# ================= Colors =================
+P = "\033[95m"
+R = "\033[91m"
+G = "\033[92m"
+Y = "\033[93m"
+C = "\033[96m"
+W = "\033[0m"
+
+# ================= Banner =================
+def banner():
+    os.system("clear")
+    print(P + " __  __  _   _  _____   _____            _       ")
+    print(P + "|  \\/  || | | ||  __ \\ / ____|          | |      ")
+    print(P + "| \\  / || |_| || |__) | |     ___  _ __ | | __   ")
+    print(P + "| |\\/| ||  _  ||  ___/| |    / _ \\| '_ \\| |/ /   ")
+    print(P + "| |  | || | | || |    | |___| (_) | | | |   <    ")
+    print(P + "|_|  |_||_| |_||_|     \\_____\\___/|_| |_|_|\\_\\   ")
+    print(Y + "              MH PASS TOOL v1.0")
+    print(C + "              Author: Malek Al-Hakem\n" + W)
+
+# ================= Warning =================
+def confirm_start():
+    print(R + "[!] WARNING: Use this tool at your own risk!" + W)
+    choice = input(G + "Press Y to continue: " + W).strip().lower()
+    if choice != "y":
+        print(R + "Aborted by user." + W)
+        sys.exit(0)
+
+# ================= Original Logic (Merged) =================
+def product_lists(lists):
+    if not lists:
+        return [""]
+    rest = product_lists(lists[1:])
+    result = []
+    for item in lists[0]:
+        for r_item in rest:
+            result.append(item + r_item)
+    return result
+
+def generate_passwords(data):
+    passwords = set()
+    fields = [str(v).lower() for v in data.values() if v]
+
+    def variants(word):
+        return {
+            word,
+            word + "123",
+            word + "2026",
+            word + "00",
+            word + "99",
+            word[::-1],
+            word.capitalize()
+        }
+
+    var_lists = [variants(f) for f in fields]
+
+    for v in var_lists:
+        passwords.update(v)
+
+    for r in [2, 3]:
+        for combo in permutations(var_lists, r):
+            passwords.update(product_lists(combo))
+
+    return sorted(passwords)
+
+# ================= User Input =================
+def collect_data():
+    keys = [
+        "name", "last_name", "birth_day", "birth_month", "birth_year",
+        "phone", "fav_number", "fav_name", "city",
+        "keyword1", "keyword2", "keyword3"
+    ]
+
+    print(Y + "[*] Enter target information (leave blank if not known)\n" + W)
+    data = {}
+    for k in keys:
+        data[k] = input(C + f"{k}: " + W).strip()
+
+    return data
+
+# ================= Save Output =================
+def save_passwords(passwords):
+    filename = "MH_passwords.txt"
+    with open(filename, "w") as f:
+        for p in passwords:
+            f.write(p + "\n")
+    return filename
+
+# ================= Main =================
+def main():
+    banner()
+    confirm_start()
+    data = collect_data()
+
+    print(G + "\n[*] Generating passwords..." + W)
+    passwords = generate_passwords(data)
+
+    file_name = save_passwords(passwords)
+
+    print(G + f"\n[✓] Done! Generated {len(passwords)} passwords" + W)
+    print(Y + f"[✓] Saved to file: {file_name}\n" + W)
+
+if __name__ == "__main__":
+    main()
