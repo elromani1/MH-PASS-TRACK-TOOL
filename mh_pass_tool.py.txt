@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from itertools import permutations
+import sys
+
+# ================== BANNER ==================
+banner = r"""
+╔════════════════════════════════════════════╗
+║              MH PASS TOOL 🔐               ║
+║        Password Generation Tool            ║
+╠════════════════════════════════════════════╣
+║ Author : Malek Al-Hakem                     ║
+║ Type   : Educational / Ethical Use         ║
+╠════════════════════════════════════════════╣
+║ ⚠️ DISCLAIMER                              ║
+║ This tool is for educational purposes only ║
+║ Use it ONLY on systems you own or have     ║
+║ permission to test.                        ║
+║ You are fully responsible for any misuse. ║
+╚════════════════════════════════════════════╝
+"""
+
+print(banner)
+
+# ================== AGREEMENT ==================
+choice = input("Do you agree to use this tool at your own responsibility? (y/n): ").strip().lower()
+
+if choice != "y":
+    print("\n[!] Access denied. Exiting tool.")
+    sys.exit(0)
+
+print("\n[+] Access granted. Starting MH PASS TOOL...\n")
+
+# ================== CORE FUNCTIONS ==================
+def product_lists(lists):
+    if not lists:
+        return [""]
+    rest = product_lists(lists[1:])
+    result = []
+    for item in lists[0]:
+        for r_item in rest:
+            result.append(item + r_item)
+    return result
+
+def generate_passwords(data):
+    passwords = set()
+    fields = [str(data.get(k, "")).lower() for k in data.keys() if data.get(k, "")]
+
+    def variants(word):
+        return {
+            word,
+            word + "123",
+            word + "2026",
+            word + "898",
+            word + "00",
+            word + "99",
+            word[::-1],
+            word.capitalize(),
+        }
+
+    var_lists = [variants(f) for f in fields]
+
+    for vset in var_lists:
+        passwords.update(vset)
+
+    for r in [2, 3]:
+        for combo in permutations(var_lists, r):
+            combos = product_lists(combo)
+            passwords.update(combos)
+
+    return sorted(passwords)
+
+# ================== MAIN ==================
+def main():
+    keys = [
+        "name", "last_name", "birth_day", "birth_month", "birth_year",
+        "phone", "fav_number", "fav_name", "city",
+        "keyword1", "keyword2", "keyword3", "keyword4",
+        "keyword5", "keyword6", "keyword7", "keyword8", "keyword9"
+    ]
+
+    print("Enter target information:\n")
+
+    data = {}
+    for k in keys:
+        data[k] = input(f"{k}: ").strip()
+
+    passwords = generate_passwords(data)
+
+    print(f"\n[✓] Generation done: {len(passwords)} passwords created\n")
+    for pwd in passwords:
+        print(pwd)
+
+# ================== RUN ==================
+if __name__ == "__main__":
+    main()
