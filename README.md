@@ -19,12 +19,12 @@ You should see the main file:
 mh_pass_tool.py
 
 🐉 Kali Linux Usage
-sudo apt update
-sudo apt install python3 -y
-git clone https://github.com/elromani1/MH-PASS-TRACK-TOOL.git
-cd MH-PASS-TRACK-TOOL
-ls
-python3 MH_PASS_TOOL.py
+$ sudo apt update
+$ sudo apt install python3 -y
+$ git clone https://github.com/elromani1/MH-PASS-TRACK-TOOL.git
+$ cd MH-PASS-TRACK-TOOL
+$ ls
+$ python3 MH_PASS_TOOL.py
 
 📱 Termux Usage (Android)
 Install requirements
