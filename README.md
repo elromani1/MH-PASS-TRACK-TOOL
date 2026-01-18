@@ -50,13 +50,15 @@ mv "MH PASS TOOL.py.txt" MH_PASS_TOOL.py
 chmod +x MH_PASS_TOOL.py
 python3 MH_PASS_TOOL.py
 
-Termux
 
+```
+### TERMUX
+```bash
 pkg update
 pkg install python git -y
 git clone https://github.com/elromani1/MH-PASS-TRACK-TOOL.git
 cd MH-PASS-TRACK-TOOL
-mv "MH PASS TOOL.py.txt" MH_PASS_TOOL.py
+mv "MH PASS TOOL.PY" MH_PASS_TOOL.py
 chmod +x MH_PASS_TOOL.py
 python MH_PASS_TOOL.py
 
