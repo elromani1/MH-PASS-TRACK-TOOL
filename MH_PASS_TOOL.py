@@ -3,10 +3,10 @@
 
 import os
 import time
-import sys
+from itertools import permutations
 
 # =========================
-# Banner Function
+# Banner
 # =========================
 def banner():
     os.system("clear")
@@ -20,9 +20,51 @@ def banner():
 
         MH PASS TOOL
         Coded By: Malek Elhakem
-        For Educational & Ethical Use Only
+        Educational & Ethical Use Only
 """)
-    time.sleep(2)
+    time.sleep(1)
+
+# =========================
+# Password Logic
+# =========================
+def product_lists(lists):
+    if not lists:
+        return [""]
+    rest = product_lists(lists[1:])
+    result = []
+    for item in lists[0]:
+        for r_item in rest:
+            result.append(item + r_item)
+    return result
+
+def variants(word):
+    return {
+        word,
+        word + "123",
+        word + "1234",
+        word + "2024",
+        word + "2025",
+        word + "2026",
+        word + "00",
+        word + "99",
+        word[::-1],
+        word.capitalize(),
+    }
+
+def generate_passwords(data):
+    passwords = set()
+    fields = [str(v).lower() for v in data.values() if v.strip()]
+
+    var_lists = [variants(f) for f in fields]
+
+    for v in var_lists:
+        passwords.update(v)
+
+    for r in [2, 3]:
+        for combo in permutations(var_lists, r):
+            passwords.update(product_lists(combo))
+
+    return sorted(passwords)
 
 # =========================
 # Main Tool
@@ -30,55 +72,51 @@ def banner():
 def main():
     banner()
 
-    print("[+] Welcome to MH PASS TOOL\n")
+    print("[+] Enter Target Information\n")
 
-    # طلب البيانات بدل ملف
-    target = input("[+] Enter Target Name/IP: ").strip()
-    username = input("[+] Enter Username: ").strip()
-    note = input("[+] Any Notes (optional): ").strip()
+    keys = [
+        "Name",
+        "Last Name",
+        "Birth Day",
+        "Birth Month",
+        "Birth Year",
+        "Phone Number",
+        "Favorite Number",
+        "Favorite Name",
+        "City",
+        "Keyword 1",
+        "Keyword 2",
+        "Keyword 3",
+        "Keyword 4",
+        "Keyword 5",
+        "Keyword 6",
+        "Keyword 7",
+        "Keyword 8",
+        "Keyword 9"
+    ]
 
-    print("\n[+] Where do you want to save the result?")
-    save_path = input("[+] Enter full path (example: /home/kali/Desktop): ").strip()
+    data = {}
+    for k in keys:
+        data[k] = input(f"{k}: ").strip()
 
-    # إنشاء المجلد لو مش موجود
-    try:
-        os.makedirs(save_path, exist_ok=True)
-    except Exception as e:
-        print(f"[X] Path Error: {e}")
-        sys.exit()
+    passwords = generate_passwords(data)
 
-    # اسم الملف
-    file_name = "MH_Result.txt"
-    full_path = os.path.join(save_path, file_name)
+    print(f"\n[✔] Generated {len(passwords)} passwords")
 
-    # محتوى الملف
-    result = f"""
-==============================
- MH PASS TOOL RESULT
-==============================
-Target   : {target}
-Username : {username}
-Notes    : {note}
+    save_path = input("\n[+] Enter path to save result (example: /home/kali/Desktop): ").strip()
+    os.makedirs(save_path, exist_ok=True)
 
-Tool     : MH PASS TOOL
-Author   : Malek Elhakem
-Status   : Completed Successfully
-==============================
-"""
+    file_path = os.path.join(save_path, "MH_PASSWORDS.txt")
 
-    # حفظ البيانات
-    try:
-        with open(full_path, "a") as f:
-            f.write(result)
+    with open(file_path, "w") as f:
+        for pwd in passwords:
+            f.write(pwd + "\n")
 
-        print("\n[✔] Done!")
-        print(f"[✔] Result saved in: {full_path}")
-
-    except Exception as e:
-        print(f"[X] Failed to save file: {e}")
+    print(f"\n[✔] Password list saved successfully")
+    print(f"[✔] File location: {file_path}")
 
 # =========================
-# Run Tool
+# Run
 # =========================
 if __name__ == "__main__":
     main()
