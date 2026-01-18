@@ -46,7 +46,6 @@ The author is **NOT responsible** for misuse.
 sudo apt update
 sudo apt install python3 git -y
 git clone https://github.com/elromani1/MH-PASS-TRACK-TOOL.git
-cd MH-PASS-TRACK-TOOL
 mv "MH PASS TOOL.py.txt" MH_PASS_TOOL.py
 chmod +x MH_PASS_TOOL.py
 python3 MH_PASS_TOOL.py
