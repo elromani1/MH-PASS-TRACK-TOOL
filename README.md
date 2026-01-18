@@ -62,6 +62,8 @@ mv "MH PASS TOOL.PY" MH_PASS_TOOL.py
 chmod +x MH_PASS_TOOL.py
 python MH_PASS_TOOL.py
 
+
+```
 📁 Output
 
 Passwords will be saved automatically to:
