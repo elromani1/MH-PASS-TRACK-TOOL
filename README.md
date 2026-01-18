@@ -58,7 +58,6 @@ pkg update
 pkg install python git -y
 git clone https://github.com/elromani1/MH-PASS-TRACK-TOOL.git
 cd MH-PASS-TRACK-TOOL
-mv "MH PASS TOOL.PY" MH_PASS_TOOL.py
 chmod +x MH_PASS_TOOL.py
 python MH_PASS_TOOL.py
 
@@ -70,6 +69,7 @@ Passwords will be saved automatically to:
 
 MH_passwords.txt
 
+```
 📌 Notes
 
     Leave any input empty if unknown
