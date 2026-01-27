@@ -11,7 +11,6 @@ from itertools import permutations
 def banner():
     os.system("clear")
     print("""
-    print("""
 ███╗   ███╗ ██╗  ██╗ ████████╗ ██████╗  ██╗     
 ████╗ ████║ ██║  ██║ ╚══██╔══╝ ██╔══██╗ ██║     
 ██╔████╔██║ ███████║    ██║    ██████╔╝ ██║     
@@ -126,5 +125,6 @@ def main():
 # =========================
 if __name__ == "__main__":
     main()
+
 
 
