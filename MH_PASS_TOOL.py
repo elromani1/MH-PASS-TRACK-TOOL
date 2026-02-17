@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import time
-from itertools import permutations
+from datetime import datetime
 
 # =========================
 # Banner
@@ -11,120 +10,196 @@ from itertools import permutations
 def banner():
     os.system("clear")
     print("""
-███╗   ███╗ ██╗  ██╗ ████████╗ ██████╗  ██╗     
-████╗ ████║ ██║  ██║ ╚══██╔══╝ ██╔══██╗ ██║     
-██╔████╔██║ ███████║    ██║    ██████╔╝ ██║     
-██║╚██╔╝██║ ██╔══██║    ██║    ██╔═══╝  ██║     
-██║ ╚═╝ ██║ ██║  ██║    ██║    ██║      ███████╗
-╚═╝     ╚═╝ ╚═╝  ╚═╝    ╚═╝    ╚═╝      ╚══════╝
-        ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-        ▌   M H T O O L  |  ATTACK   ▐
-        ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-     [!] Ethical Hacking Tool
-     [!] Use For Awareness & Testing Only
-
-        MH PASS TOOL
-        Coded By: Malek Elhakem
-        Educational & Ethical Use Only
+========================================
+ MH PASS TOOL  - Password Awareness Demo
+ Educational Use Only
+========================================
 """)
-    time.sleep(1)
 
 # =========================
-# Password Logic
+# Franco Converter
 # =========================
-def product_lists(lists):
-    if not lists:
-        return [""]
-    rest = product_lists(lists[1:])
-    result = []
-    for item in lists[0]:
-        for r_item in rest:
-            result.append(item + r_item)
+def to_franco(word):
+    mapping = {
+        "a":"a","b":"b","c":"c","d":"d","e":"e",
+        "f":"f","g":"g","h":"7","i":"i","j":"g",
+        "k":"k","l":"l","m":"m","n":"n","o":"o",
+        "p":"p","q":"q","r":"r","s":"s","t":"t",
+        "u":"u","v":"v","w":"w","x":"x","y":"y","z":"z"
+    }
+    result=""
+    for ch in word.lower():
+        result+=mapping.get(ch,ch)
     return result
 
+# =========================
+# Password Variants
+# =========================
 def variants(word):
-    return {
-        word,
-        word + "123",
-        word + "1234",
-        word + "2024",
-        word + "2025",
-        word + "2026",
-        word + "00",
-        word + "99",
-        word[::-1],
+
+    word=word.strip()
+    if not word:
+        return []
+
+    results=set()
+
+    base_forms={
+        word.lower(),
+        word.upper(),
         word.capitalize(),
+        word[::-1],
+        to_franco(word)
     }
 
-def generate_passwords(data):
-    passwords = set()
-    fields = [str(v).lower() for v in data.values() if v.strip()]
+    # leet
+    leet=(word.lower()
+    .replace('a','@')
+    .replace('o','0')
+    .replace('i','1')
+    .replace('e','3')
+    .replace('s','$')
+    .replace('t','7'))
+    base_forms.add(leet)
 
-    var_lists = [variants(f) for f in fields]
+    numbers=["","1","2","3","5","7","9","10","11","12","123","1234","12345","00","99"]
+    years=[str(y) for y in range(1990,datetime.now().year+1)]
+    symbols=["!","@","_","."]
+    arabic=["a","m","s","h","n"]
 
-    for v in var_lists:
-        passwords.update(v)
+    for base in base_forms:
 
-    for r in [2, 3]:
-        for combo in permutations(var_lists, r):
-            passwords.update(product_lists(combo))
+        # ارقام
+        for n in numbers:
+            results.add(base+n)
+            results.add(n+base)
 
-    return sorted(passwords)
+        # سنوات
+        for y in years:
+            results.add(base+y)
+
+        # رموز
+        for s in symbols:
+            results.add(base+s)
+            results.add(s+base)
+            results.add(base+s+"123")
+
+        # تكرار
+        results.add(base+base)
+        results.add(base+"_"+base)
+        results.add(base+base+"123")
+
+        # عربي انجليزي
+        for ar in arabic:
+            results.add(base+ar)
+
+        # شائع
+        results.add(base+"@123")
+        results.add(base+"123!")
+        results.add(base+"_123")
+
+    return list(results)
 
 # =========================
-# Main Tool
+# Generate Passwords
+# =========================
+def generate_passwords(data,file_path):
+
+    fields=[v.lower() for v in data.values() if v.strip()]
+    var_lists=[variants(f) for f in fields]
+
+    count=0
+
+    with open(file_path,"w",encoding="utf-8") as f:
+
+        # كلمات منفردة
+        for v in var_lists:
+            for pwd in v:
+                f.write(pwd+"\n")
+                count+=1
+
+        # دمج كلمتين
+        for i in range(len(var_lists)):
+            for j in range(len(var_lists)):
+                if i!=j:
+                    for a in var_lists[i]:
+                        for b in var_lists[j]:
+                            f.write(a+b+"\n")
+                            count+=1
+
+        # انماط جاهزة
+        COMMON=[
+        "123456","12345678","123123","123qwe",
+        "qwerty","qwerty123","1q2w3e4r",
+        "zaq12wsx","asdf123","000000","111111"
+        ]
+
+        for c in COMMON:
+            f.write(c+"\n")
+            count+=1
+
+        # الكود القديم
+        for field in fields:
+            f.write(field+"123\n")
+            f.write(field+"1234\n")
+            f.write(field+"2024\n")
+            f.write(field+"2025\n")
+            count+=4
+
+    return count
+
+# =========================
+# Main
 # =========================
 def main():
+
     banner()
 
-    print("[+] Enter Target Information\n")
-
-    keys = [
-        "Name",
-        "Last Name",
-        "Birth Day",
-        "Birth Month",
-        "Birth Year",
-        "Phone Number",
-        "Favorite Number",
-        "Favorite Name",
-        "City",
-        "Keyword 1",
-        "Keyword 2",
-        "Keyword 3",
-        "Keyword 4",
-        "Keyword 5",
-        "Keyword 6",
-        "Keyword 7",
-        "Keyword 8",
-        "Keyword 9"
+    keys=[
+    "First Name","Last Name","Nickname","Known As","Old Username",
+    "Mother Name","Father Name","Brother Name","Sister Name",
+    "Person You Love","Best Friend","Pet Name",
+    "Age","Birth Day","Birth Month","Birth Year","Graduation Year","Important Date",
+    "City","District","School","University","Workplace",
+    "Favorite Club","Favorite Player","Favorite Singer","Favorite Movie","Favorite Series","Favorite Game",
+    "Lucky Number","Favorite Number","Phone Last 4 Digits","Street Number","Apartment Number",
+    "Instagram Username","Facebook Username","Email Username"
     ]
 
-    data = {}
+    print("\nFill info (press Enter to skip)\n")
+
+    data={}
     for k in keys:
-        data[k] = input(f"{k}: ").strip()
+        val=input(f"{k}: ").strip()
+        if val:
+            data[k]=val
 
-    passwords = generate_passwords(data)
+    # تواريخ مركبة
+    if "Birth Day" in data and "Birth Month" in data:
+        data["Birth_DDMM"]=data["Birth Day"]+data["Birth Month"]
 
-    print(f"\n[✔] Generated {len(passwords)} passwords")
+    if "Birth Year" in data:
+        data["Birth_YY"]=data["Birth Year"][2:]
 
-    save_path = input("\n[+] Enter path to save result (example: /home/kali/Desktop): ").strip()
-    os.makedirs(save_path, exist_ok=True)
+    # كلمات مخصصة
+    print("\nAdd your own words (Enter empty to finish)")
+    i=0
+    while True:
+        w=input("Add word: ").strip()
+        if w=="":
+            break
+        data[f"Custom_{i}"]=w
+        i+=1
 
-    file_path = os.path.join(save_path, "MH_PASSWORDS.txt")
+    path=input("\nEnter save folder path: ").strip()
+    os.makedirs(path,exist_ok=True)
 
-    with open(file_path, "w") as f:
-        for pwd in passwords:
-            f.write(pwd + "\n")
+    file_path=os.path.join(path,"MH_PASSWORDS.txt")
 
-    print(f"\n[✔] Password list saved successfully")
-    print(f"[✔] File location: {file_path}")
+    count=generate_passwords(data,file_path)
 
-# =========================
-# Run
-# =========================
-if __name__ == "__main__":
+    print("\nDone!")
+    print("Generated:",count,"passwords")
+    print("Saved to:",file_path)
+
+if __name__=="__main__":
     main()
-
-
-
